@@ -1,33 +1,73 @@
 package com.fs.ecom.ecom_webapp.controllers;
 
-import com.fs.ecom.ecom_webapp.dto.LoginDTO;
-import com.fs.ecom.ecom_webapp.dto.UserDTO;
+import com.fs.ecom.ecom_webapp.dto.RegisterDTO;
+import com.fs.ecom.ecom_webapp.dto.UserDetailsDTO;
+import com.fs.ecom.ecom_webapp.models.AuthRequest;
 import com.fs.ecom.ecom_webapp.models.User;
+import com.fs.ecom.ecom_webapp.security.service.JwtService;
+import com.fs.ecom.ecom_webapp.services.UserInfoService;
 import com.fs.ecom.ecom_webapp.services.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@Controller
-@RequestMapping(value = "/user")
+@RestController
+@RequestMapping(value = "/auth")
+@CrossOrigin(originPatterns = "*")
 public class UserController {
 
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserInfoService userInfoService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtService jwtService;
+
     // below two should be in different controller classes I think.
-    @GetMapping("/profile")
-    public User getUserDetails(Long id){
-        return userService.getUserDetails(id);
-    }
+//    @GetMapping("/{id}")
+//    public User getUserDetails(@PathVariable("id") Long id){
+//        return userService.getUser(id);
+//    }
+//
+//    @PostMapping("")
+//    public void postUser(User user){
+//        userService.postUser(user);
+//    }
+//
+//    @PutMapping("/{id}")
+//    public void updateUserById(@PathVariable("id") Long id, User user){
+//        userService.updateUser(id,user);
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public void deleteUser(@PathVariable("id") Long id){
+//        userService.deleteUser(id);
+//    }
+//
+//    @DeleteMapping("/users")
+//    public void deleteAll(){
+//        userService.deleteAll();
+//    }
+
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO){
-        userService.registerUser(userDTO);
+    public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO){
+        userService.registerUser(registerDTO);
         ResponseEntity<?> response = new ResponseEntity<User>(HttpStatus.OK);
         return response;
     }
@@ -39,7 +79,37 @@ public class UserController {
 //        return response;
 //    }
 
-    // write login api
 
-    // Need to add CRUD operations for users
+    @GetMapping("/user/userProfile")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<UserDetailsDTO> userProfile(@RequestHeader String auth_token) {
+        return ResponseEntity.ok(userInfoService.loadUserByToken(auth_token));
+    }
+
+    @GetMapping("/admin/adminProfile")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String adminProfile() {
+        return "Welcome to Admin Profile";
+    }
+
+    @PostMapping("/generateToken")
+    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            String token = jwtService.generateToken(authRequest.getUsername());
+            Cookie cookie = new Cookie("JWT", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60);
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok("Token sent as cookie");
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
+    }
+
 }
