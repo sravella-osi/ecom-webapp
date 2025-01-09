@@ -7,6 +7,7 @@ import com.fs.ecom.ecom_webapp.repositories.UserRepository;
 import com.fs.ecom.ecom_webapp.security.service.JwtService;
 import com.fs.ecom.ecom_webapp.security.service.UserInfoDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +29,7 @@ public class UserInfoService implements UserDetailsService {
     private JwtService jwtService;
 
     @Autowired
+    @Lazy
     private PasswordEncoder encoder;
 
     @Override
@@ -43,7 +45,7 @@ public class UserInfoService implements UserDetailsService {
         String userName = jwtService.extractUsername(token);
         Optional<User> user = repository.findByUserName(userName);
 
-        UserDetailsDTO userDetailsDTO = new UserDetailsDTO( );
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
 
         try{
             if (user.isPresent()) {

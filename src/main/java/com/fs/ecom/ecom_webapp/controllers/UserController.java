@@ -67,7 +67,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO){
-        userService.registerUser(registerDTO);
+        userInfoService.addUser(registerDTO);
         ResponseEntity<?> response = new ResponseEntity<User>(HttpStatus.OK);
         return response;
     }
@@ -81,13 +81,13 @@ public class UserController {
 
 
     @GetMapping("/user/userProfile")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<UserDetailsDTO> userProfile(@RequestHeader String auth_token) {
         return ResponseEntity.ok(userInfoService.loadUserByToken(auth_token));
     }
 
     @GetMapping("/admin/adminProfile")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String adminProfile() {
         return "Welcome to Admin Profile";
     }
