@@ -4,6 +4,7 @@ import com.fs.ecom.ecom_webapp.security.service.JwtService;
 import com.fs.ecom.ecom_webapp.services.UserInfoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Retrieve the Authorization header
+        // Retrieve the Authorization token from cookies
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("JWT".equals(cookie.getName())) {
+                    String jwt = cookie.getValue();
+                    // Add the token to the Authorization header
+                    request.setAttribute("Authorization", "Bearer " + jwt);
+                }
+            }
+        }
+        //Retrieve Authorization header from request
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String email = null;
