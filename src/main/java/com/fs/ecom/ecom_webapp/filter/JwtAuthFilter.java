@@ -29,24 +29,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Retrieve the Authorization token from cookies
+        String jwt = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("JWT".equals(cookie.getName())) {
-                    String jwt = cookie.getValue();
-                    // Add the token to the Authorization header
-                    request.setAttribute("Authorization", "Bearer " + jwt);
+                    jwt = cookie.getValue();
+                    break;
                 }
             }
         }
-        //Retrieve Authorization header from request
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String email = null;
 
-        // Check if the header starts with "Bearer "
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // Extract token
-            email = jwtService.extractSubject(token); // Extract email from token
+        request.setAttribute("Authorization", "Bearer " + jwt);
+
+        String email = null;
+        if (jwt != null) {
+            email = jwtService.extractSubject(jwt);
         }
 
         // If the token is valid and no authentication is set in the context
@@ -54,7 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             // Validate token and set authentication
-            if (jwtService.validateToken(token, userDetails)) {
+            if (jwtService.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
