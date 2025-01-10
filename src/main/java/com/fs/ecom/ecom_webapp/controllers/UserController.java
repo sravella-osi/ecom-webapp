@@ -9,6 +9,7 @@ import com.fs.ecom.ecom_webapp.services.UserInfoService;
 import com.fs.ecom.ecom_webapp.services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,16 +83,23 @@ public class UserController {
 
     @GetMapping("/user/userProfile")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<UserDetailsDTO> userProfile(@RequestHeader("Authorization") String auth_token) {
-        String token = auth_token.startsWith("Bearer ") ? auth_token.substring(7) : null;
-        return ResponseEntity.ok(userInfoService.loadUserByToken(token));
+    public ResponseEntity<?> userProfile(HttpServletRequest httpServletRequest) {
+        String jwt = userInfoService.getJWTfromCookie(httpServletRequest);
+        if(jwt == "No Token"){
+            return new ResponseEntity<String>("no Content",HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.ok(userInfoService.loadUserByToken(jwt));
     }
 
     @PostMapping("/user/update/userProfile")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailsDTO userDetailsDTO,@RequestHeader("Authorization") String auth_token) {
-        String token = auth_token.startsWith("Bearer ") ? auth_token.substring(7) : null;
-        String msg = userInfoService.updateUserProfile(userDetailsDTO, token);
+    public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailsDTO userDetailsDTO, HttpServletRequest httpServletRequest) {
+
+        String jwt = userInfoService.getJWTfromCookie(httpServletRequest);
+        if(jwt == "No Token"){
+            return new ResponseEntity<String>("no Content",HttpStatus.NO_CONTENT);
+        }
+        String msg = userInfoService.updateUserProfile(userDetailsDTO, jwt);
         return ResponseEntity.ok(msg);
     }
 

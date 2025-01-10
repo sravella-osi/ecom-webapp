@@ -28,6 +28,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String requestURI = request.getRequestURI();
+        if ("/auth/register".equals(requestURI) || "/auth/generateToken".equals(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // Retrieve the Authorization token from cookies
         String jwt = null;
         if (request.getCookies() != null) {
@@ -39,7 +46,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        request.setAttribute("Authorization", "Bearer " + jwt);
 
         String email = null;
         if (jwt != null) {

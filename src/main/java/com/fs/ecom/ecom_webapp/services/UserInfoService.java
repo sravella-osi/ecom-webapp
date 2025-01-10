@@ -7,6 +7,8 @@ import com.fs.ecom.ecom_webapp.models.User;
 import com.fs.ecom.ecom_webapp.repositories.UserRepository;
 import com.fs.ecom.ecom_webapp.security.service.JwtService;
 import com.fs.ecom.ecom_webapp.security.service.UserInfoDetails;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -87,5 +89,18 @@ public class UserInfoService implements UserDetailsService {
         else{
             return "User to update not found";
         }
+    }
+
+    public String getJWTfromCookie(HttpServletRequest request) {
+        String token = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("JWT".equals(cookie.getName())) {
+                    token = cookie.getValue(); // Retrieve the JWT value
+                    return token;
+                }
+            }
+        }
+        return "No Token";
     }
 }
