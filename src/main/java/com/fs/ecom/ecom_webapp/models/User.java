@@ -8,6 +8,15 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 public class User {
+
+    public User(String firstName, String lastName, String userName, String email, String mobile) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.email = email;
+        this.mobile = mobile;
+    }
+
     public Long getId() {
         return id;
     }
@@ -99,7 +108,7 @@ public class User {
     @Column(name= "mobile")
     private String mobile;
 
-    public User(String firstName, String lastName, String userName, String email, String password, String mobile) {
+    public User(String firstName, String lastName, String userName, String email, String password, String mobile) { //Registering
         this.firstName = firstName;
         this.lastName = lastName;
         this.userName = userName;

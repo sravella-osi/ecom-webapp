@@ -48,6 +48,10 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractSubject(String token){
+        return extractClaim(token, Claims::getSubject);
+    }
+
     // Extract the expiration date from the token
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -75,7 +79,7 @@ public class JwtService {
 
     // Validate the token against user details and expiration
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String subject = extractSubject(token);
+        return (subject.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

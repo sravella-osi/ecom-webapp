@@ -2,6 +2,8 @@ package com.fs.ecom.ecom_webapp.services;
 
 import com.fs.ecom.ecom_webapp.dto.LoginDTO;
 import com.fs.ecom.ecom_webapp.dto.RegisterDTO;
+import com.fs.ecom.ecom_webapp.dto.UpdateDTO;
+import com.fs.ecom.ecom_webapp.dto.UserDetailsDTO;
 import com.fs.ecom.ecom_webapp.models.User;
 import com.fs.ecom.ecom_webapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +25,15 @@ public class UserService {
         repository.save(user);
     }
 
-    public User updateUser (Long id, User user) {
-        User existingUser = repository.getReferenceById(id);
-        existingUser.setFirstName(user.getFirstName());
-        existingUser.setLastName(user.getLastName());
-        existingUser.setUserName(user.getUserName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setMobile(user.getMobile());
-        existingUser.setPassword(user.getPassword());
+    public void updateUser (UpdateDTO updateDTO) throws NullPointerException {
+        User existingUser = repository.getReferenceById(updateDTO.getId());
+        existingUser.setFirstName(updateDTO.getFirstName());
+        existingUser.setLastName(updateDTO.getLastName());
+        existingUser.setUserName(updateDTO.getUserName());
+        existingUser.setEmail(updateDTO.getEmail());
+        existingUser.setMobile(updateDTO.getMobile());
 
-        return repository.save(existingUser);
+        repository.save(existingUser);
     }
 
     public void deleteUser (Long id){
@@ -49,5 +50,6 @@ public class UserService {
         User user = new User(firstName, lastName, registerDTO.defaultUserName(), registerDTO.getEmail(), registerDTO.getPassword(), registerDTO.getMobile());
         repository.save(user);
     }
+
 
 }

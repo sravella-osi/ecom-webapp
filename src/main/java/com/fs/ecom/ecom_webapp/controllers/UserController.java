@@ -67,8 +67,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO){
-        userInfoService.addUser(registerDTO);
-        ResponseEntity<?> response = new ResponseEntity<User>(HttpStatus.OK);
+        String msg = userInfoService.addUser(registerDTO);
+        ResponseEntity<?> response = ResponseEntity.ok(msg);
         return response;
     }
 
@@ -82,8 +82,17 @@ public class UserController {
 
     @GetMapping("/user/userProfile")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<UserDetailsDTO> userProfile(@RequestHeader String auth_token) {
-        return ResponseEntity.ok(userInfoService.loadUserByToken(auth_token));
+    public ResponseEntity<UserDetailsDTO> userProfile(@RequestHeader("Authorization") String auth_token) {
+        String token = auth_token.startsWith("Bearer ") ? auth_token.substring(7) : null;
+        return ResponseEntity.ok(userInfoService.loadUserByToken(token));
+    }
+
+    @PostMapping("/user/update/userProfile")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailsDTO userDetailsDTO,@RequestHeader("Authorization") String auth_token) {
+        String token = auth_token.startsWith("Bearer ") ? auth_token.substring(7) : null;
+        String msg = userInfoService.updateUserProfile(userDetailsDTO, token);
+        return ResponseEntity.ok(msg);
     }
 
     @GetMapping("/admin/adminProfile")
@@ -95,10 +104,10 @@ public class UserController {
     @PostMapping("/generateToken")
     public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateToken(authRequest.getUsername());
+            String token = jwtService.generateToken(authRequest.getEmail());
             Cookie cookie = new Cookie("JWT", token);
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
