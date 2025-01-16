@@ -117,11 +117,9 @@ public class UserController {
         if (authentication.isAuthenticated()) {
             String token = jwtService.generateToken(authRequest.getEmail());
             Cookie cookie = new Cookie("JWT", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60);
-            response.addCookie(cookie);
+
+            response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=3600; Path=/; Domain = localhost; HttpOnly; Secure; SameSite=None",
+                    cookie.getName(), cookie.getValue()));
 
             return ResponseEntity.ok("Token sent as cookie");
         } else {
