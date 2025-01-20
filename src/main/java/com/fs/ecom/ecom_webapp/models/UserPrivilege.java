@@ -33,8 +33,7 @@ public class UserPrivilege {
     public UserPrivilege() {
     }
 
-    public UserPrivilege(Long id, User user, Privilege privilege) {
-        this.id = id;
+    public UserPrivilege(User user, Privilege privilege) {
         this.user = user;
         this.privilege = privilege;
     }

@@ -4,6 +4,7 @@ import com.fs.ecom.ecom_webapp.dto.RegisterDTO;
 import com.fs.ecom.ecom_webapp.dto.UpdateDTO;
 import com.fs.ecom.ecom_webapp.dto.UserDetailsDTO;
 import com.fs.ecom.ecom_webapp.models.User;
+import com.fs.ecom.ecom_webapp.models.UserPrivilege;
 import com.fs.ecom.ecom_webapp.repositories.UserRepository;
 import com.fs.ecom.ecom_webapp.security.service.JwtService;
 import com.fs.ecom.ecom_webapp.security.service.UserInfoDetails;
@@ -27,6 +28,9 @@ public class UserInfoService implements UserDetailsService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserPrivilegeService userPrivilegeService;
 
     @Autowired
     private JwtService jwtService;
@@ -68,6 +72,7 @@ public class UserInfoService implements UserDetailsService {
     public String addUser(RegisterDTO registerDTO) {
         registerDTO.setPassword(encoder.encode(registerDTO.getPassword()));
         userService.registerUser(registerDTO);
+        userPrivilegeService.addUserPriv(repository.findByEmail(registerDTO.getEmail()).get());
         return "User Added Successfully";
     }
 
