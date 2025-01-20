@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,8 +69,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO){
-        String msg = userInfoService.addUser(registerDTO);
-        ResponseEntity<?> response = ResponseEntity.ok(msg);
+        userInfoService.addUser(registerDTO);
+        ResponseEntity<?> response = ResponseEntity.status(HttpStatus.CREATED).body(registerDTO);
         return response;
     }
 
@@ -94,13 +95,13 @@ public class UserController {
     @PostMapping("/user/update/userProfile")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailsDTO userDetailsDTO, HttpServletRequest httpServletRequest) {
-
+        UserDetailsDTO userDetails = new UserDetailsDTO();
         String jwt = userInfoService.getJWTfromCookie(httpServletRequest);
         if(jwt == "No Token"){
-            return new ResponseEntity<String>("no Content",HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User Not Found");
         }
-        String msg = userInfoService.updateUserProfile(userDetailsDTO, jwt);
-        return ResponseEntity.ok(msg);
+        userDetails = userInfoService.updateUserProfile(userDetailsDTO, jwt);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(userDetails);
     }
 
     @GetMapping("/admin/adminProfile")
@@ -120,8 +121,7 @@ public class UserController {
 
             response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=3600; Path=/; Domain = localhost; HttpOnly; Secure; SameSite=None",
                     cookie.getName(), cookie.getValue()));
-
-            return ResponseEntity.ok("Token sent as cookie");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Token sent as cookie");
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }

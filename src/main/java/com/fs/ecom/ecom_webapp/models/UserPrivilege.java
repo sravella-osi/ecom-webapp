@@ -45,11 +45,11 @@ public class UserPrivilege {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Link to User entity
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "privilege_id", nullable = false)
-    private Privilege privilege; // Link to Privilege entity
+    private Privilege privilege;
 
     public String getPrivilegeName() {
         return privilege.getName();

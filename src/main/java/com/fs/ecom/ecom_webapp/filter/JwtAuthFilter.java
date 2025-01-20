@@ -35,7 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Retrieve the Authorization token from cookies
         String jwt = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
@@ -52,11 +51,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             email = jwtService.extractSubject(jwt);
         }
 
-        // If the token is valid and no authentication is set in the context
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            // Validate token and set authentication
             if (jwtService.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -68,7 +65,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // Continue the filter chain
         filterChain.doFilter(request, response);
     }
 }

@@ -39,7 +39,6 @@ public class UserInfoService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userDetail = repository.findByEmail(email);
 
-        // Converting UserInfo to UserDetails
         return userDetail.map(UserInfoDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
@@ -67,28 +66,23 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public String addUser(RegisterDTO registerDTO) {
-        // Encode password before saving the user
         registerDTO.setPassword(encoder.encode(registerDTO.getPassword()));
         userService.registerUser(registerDTO);
         return "User Added Successfully";
     }
 
-    public String updateUserProfile(UserDetailsDTO userDetailsDTO, String token) {
+    public UserDetailsDTO updateUserProfile(UserDetailsDTO userDetailsDTO, String token) {
         Optional<User> user = repository.findByEmail(jwtService.extractSubject(token));
         UpdateDTO updateDTO = null;
-        if(user.isPresent()){
+        if (user.isPresent()) {
             updateDTO = new UpdateDTO(user.get());
             updateDTO.setEmail(userDetailsDTO.getEmail());
             updateDTO.setFirstName(userDetailsDTO.getFirstName());
             updateDTO.setLastName(userDetailsDTO.getLastName());
             updateDTO.setUserName(userDetailsDTO.getUserName());
             updateDTO.setMobile(userDetailsDTO.getMobile());
-            userService.updateUser(updateDTO);
-            return "User Updated Successfully";
         }
-        else{
-            return "User to update not found";
-        }
+        return userService.updateUser(updateDTO);
     }
 
     public String getJWTfromCookie(HttpServletRequest request) {
@@ -96,7 +90,7 @@ public class UserInfoService implements UserDetailsService {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("JWT".equals(cookie.getName())) {
-                    token = cookie.getValue(); // Retrieve the JWT value
+                    token = cookie.getValue();
                     return token;
                 }
             }

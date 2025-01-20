@@ -25,7 +25,7 @@ public class UserService {
         repository.save(user);
     }
 
-    public void updateUser (UpdateDTO updateDTO) throws NullPointerException {
+    public UserDetailsDTO updateUser (UpdateDTO updateDTO) throws NullPointerException {
         User existingUser = repository.getReferenceById(updateDTO.getId());
         existingUser.setFirstName(updateDTO.getFirstName());
         existingUser.setLastName(updateDTO.getLastName());
@@ -34,6 +34,7 @@ public class UserService {
         existingUser.setMobile(updateDTO.getMobile());
 
         repository.save(existingUser);
+        return new UserDetailsDTO(existingUser);
     }
 
     public void deleteUser (Long id){

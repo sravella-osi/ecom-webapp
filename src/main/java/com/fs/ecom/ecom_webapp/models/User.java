@@ -108,7 +108,7 @@ public class User {
     @Column(name= "mobile")
     private String mobile;
 
-    public User(String firstName, String lastName, String userName, String email, String password, String mobile) { //Registering
+    public User(String firstName, String lastName, String userName, String email, String password, String mobile) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.userName = userName;

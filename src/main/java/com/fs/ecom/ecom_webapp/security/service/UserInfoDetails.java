@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 
 public class UserInfoDetails implements UserDetails {
 
-    private String username; // Changed from 'name' to 'username' for clarity
+    private String username;
     private String password;
     private List<GrantedAuthority> authorities;
 
     public UserInfoDetails(User userInfo) {
-        this.username = userInfo.getEmail(); // Assuming 'name' is used as 'username'
+        this.username = userInfo.getEmail();
         this.password = userInfo.getPassword();
         this.authorities = userInfo.getPrivilegeNames()
                 .stream()
@@ -39,23 +39,4 @@ public class UserInfoDetails implements UserDetails {
         return username;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true; // Implement your logic if you need this
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true; // Implement your logic if you need this
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true; // Implement your logic if you need this
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true; // Implement your logic if you need this
-    }
 }
