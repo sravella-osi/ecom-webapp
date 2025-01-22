@@ -108,6 +108,12 @@ public class User {
     @Column(name= "mobile")
     private String mobile;
 
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    private Set<UserPrivilege> userPrivileges;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    private Set<AddressBook> addressBooks;
+
     public User(String firstName, String lastName, String userName, String email, String password, String mobile) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -117,13 +123,14 @@ public class User {
         this.mobile = mobile;
     }
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
-    private Set<UserPrivilege> userPrivileges;
-
     public List<String> getPrivilegeNames() {
         return userPrivileges.stream()
                 .map(userPrivilege -> userPrivilege.getPrivilegeName())
                 .collect(Collectors.toList());
+    }
+
+    public List<AddressBook> getAddresses() {
+        return addressBooks.stream().collect(Collectors.toList());
     }
 
 }

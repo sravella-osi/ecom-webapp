@@ -1,7 +1,9 @@
 package com.fs.ecom.ecom_webapp.controllers;
 
+import com.fs.ecom.ecom_webapp.dto.AddressDTO;
 import com.fs.ecom.ecom_webapp.dto.RegisterDTO;
 import com.fs.ecom.ecom_webapp.dto.UserDetailsDTO;
+import com.fs.ecom.ecom_webapp.exceptions.AddressNotFoundException;
 import com.fs.ecom.ecom_webapp.models.AuthRequest;
 import com.fs.ecom.ecom_webapp.models.User;
 import com.fs.ecom.ecom_webapp.security.service.JwtService;
@@ -22,6 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/auth")
@@ -69,8 +73,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO){
-        userInfoService.addUser(registerDTO);
-        ResponseEntity<?> response = ResponseEntity.status(HttpStatus.CREATED).body(registerDTO);
+        UserDetailsDTO userDetailsDTO = userInfoService.addUser(registerDTO);
+        ResponseEntity<?> response = ResponseEntity.status(HttpStatus.CREATED).body(userDetailsDTO);
         return response;
     }
 
@@ -125,6 +129,43 @@ public class UserController {
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }
+    }
+
+    @PostMapping("/user/add/address")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> addAddress (@RequestBody AddressDTO addressDto, HttpServletRequest request){
+
+        AddressDTO savedAddress = userInfoService.addAddress(addressDto, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
+    }
+
+    @GetMapping("/user/addresses")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> getAddresses (HttpServletRequest request){
+
+        List<AddressDTO> addresses = userInfoService.getAddresses(request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(addresses);
+    }
+
+    @DeleteMapping("/user/delete/address")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> deleteAddress (@RequestBody AddressDTO addressDto, HttpServletRequest request){
+        try {
+            userInfoService.deleteAddress(addressDto, request);
+        } catch (AddressNotFoundException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted address");
+    }
+
+    @PutMapping("/user/update/address")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> updateAddress (@RequestBody AddressDTO addressDto, HttpServletRequest request){
+
+
+        return ResponseEntity.status(HttpStatus.OK).body("updated addressDTO");
     }
 
 }

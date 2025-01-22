@@ -45,11 +45,12 @@ public class UserService {
         repository.deleteAll();
     }
 
-    public void registerUser (RegisterDTO registerDTO) {
+    public UserDetailsDTO registerUser (RegisterDTO registerDTO) {
         String firstName = registerDTO.getFirstName();
         String lastName = registerDTO.getLastName();
         User user = new User(firstName, lastName, registerDTO.defaultUserName(), registerDTO.getEmail(), registerDTO.getPassword(), registerDTO.getMobile());
-        repository.save(user);
+        User registeredUser = repository.save(user);
+        return new UserDetailsDTO(registeredUser);
     }
 
 
