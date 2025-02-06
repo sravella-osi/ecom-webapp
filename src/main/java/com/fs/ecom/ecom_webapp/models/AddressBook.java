@@ -81,6 +81,20 @@ public class AddressBook {
         this.countryCode = addressDto.getCountryCode();
     }
 
+    public AddressBook (AddressDTO addressDto, User user) {
+        this.id = addressDto.getId();
+        this.user = user;
+        this.addressLine1 = addressDto.getAddressLine1();
+        this.addressLine2 = addressDto.getAddressLine2();
+        this.city = addressDto.getCity();
+        this.zipcode = addressDto.getZipcode();
+        this.state = addressDto.getState();
+        this.country = addressDto.getCountry();
+        this.isDefault = addressDto.isDefault();
+        this.contact = addressDto.getContact();
+        this.countryCode = addressDto.getCountryCode();
+    }
+
     public AddressBook() {
     }
 

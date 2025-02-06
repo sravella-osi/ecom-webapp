@@ -139,7 +139,7 @@ public class UserInfoService implements UserDetailsService {
         }
 
         AddressBook address = new AddressBook(addressDto);
-        address.setUser(repository.getReferenceById(addressDto.getUserId()));
+        address.setUser(user);
 
         AddressBook savedAddress = addressRepository.save(address);
 
@@ -179,5 +179,20 @@ public class UserInfoService implements UserDetailsService {
             addressRepository.deleteById(addressDto.getId());
         }
 
+    }
+    public AddressDTO updateAddress(AddressDTO addressDto, HttpServletRequest request) throws AddressNotFoundException {
+        User user = null;
+        try {
+            user = getUserFromRequest(request);
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(addressDto.getUserId() != user.getId()){
+            throw new AddressNotFoundException("Address not found");
+        }
+        else {
+            addressDto = new AddressDTO(addressRepository.save(new AddressBook(addressDto, user)));
+        }
+        return addressDto;
     }
 }

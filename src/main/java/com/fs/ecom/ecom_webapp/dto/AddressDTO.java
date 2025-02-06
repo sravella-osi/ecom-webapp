@@ -132,7 +132,6 @@ public class AddressDTO {
         return userId;
     }
 
-    public void setUserId(User user) {
-        this.userId = user.getId();
-    }
+    public void setUserId(Long id) { this.userId = id;}
+
 }

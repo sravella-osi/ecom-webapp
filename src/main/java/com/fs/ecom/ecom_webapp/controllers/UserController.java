@@ -131,7 +131,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/add/address")
+    @PostMapping("/user/address")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> addAddress (@RequestBody AddressDTO addressDto, HttpServletRequest request){
 
@@ -149,7 +149,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(addresses);
     }
 
-    @DeleteMapping("/user/delete/address")
+    @DeleteMapping("/user/address")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> deleteAddress (@RequestBody AddressDTO addressDto, HttpServletRequest request){
         try {
@@ -160,12 +160,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Deleted address");
     }
 
-    @PutMapping("/user/update/address")
+    @PutMapping("/user/address")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updateAddress (@RequestBody AddressDTO addressDto, HttpServletRequest request){
-
-
-        return ResponseEntity.status(HttpStatus.OK).body("updated addressDTO");
+        AddressDTO addressDTO = null;
+        try {
+            addressDTO = userInfoService.updateAddress(addressDto, request);
+        } catch (AddressNotFoundException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(addressDTO);
     }
 
 }
