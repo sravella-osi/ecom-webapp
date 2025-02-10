@@ -67,6 +67,7 @@ public class UserInfoService implements UserDetailsService {
         try{
             if (user.isPresent()) {
                 User temp = user.get();
+                userDetailsDTO.setId(temp.getId());
                 userDetailsDTO.setUserName(temp.getUserName());
                 userDetailsDTO.setMobile(temp.getMobile());
                 userDetailsDTO.setEmail(temp.getEmail());

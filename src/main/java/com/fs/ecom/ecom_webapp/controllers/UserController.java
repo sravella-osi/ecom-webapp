@@ -115,7 +115,7 @@ public class UserController {
     }
 
     @PostMapping("/generateToken")
-    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
@@ -125,7 +125,8 @@ public class UserController {
 
             response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=3600; Path=/; Domain = localhost; HttpOnly; Secure; SameSite=None",
                     cookie.getName(), cookie.getValue()));
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Token sent as cookie");
+            UserDetailsDTO userDetailsDTO = userInfoService.loadUserByToken(token);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDetailsDTO);
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }
