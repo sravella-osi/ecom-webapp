@@ -98,7 +98,7 @@ public class UserController {
         return ResponseEntity.ok(userInfoService.loadUserByToken(jwt));
     }
 
-    @PostMapping("/user/update/userProfile")
+    @PutMapping("/user/userProfile")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailsDTO userDetailsDTO, HttpServletRequest httpServletRequest) {
         UserDetailsDTO userDetails = new UserDetailsDTO();
