@@ -107,7 +107,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User Not Found");
         }
         userDetails = userInfoService.updateUserProfile(userDetailsDTO, jwt);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(userDetails);
     }
 
     @GetMapping("/admin/adminProfile")
