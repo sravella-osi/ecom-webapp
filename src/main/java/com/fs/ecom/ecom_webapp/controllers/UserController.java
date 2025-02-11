@@ -78,12 +78,14 @@ public class UserController {
         return response;
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
-//        userService.login(loginDTO);
-//        ResponseEntity<?> response = new ResponseEntity<>("Login Successful",HttpStatus.OK);
-//        return response;
-//    }
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response){
+        Cookie cookie = new Cookie("JWT", null);
+        response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=0; Path=/; Domain = localhost; HttpOnly; Secure; SameSite=None",
+                cookie.getName(), cookie.getValue()));
+        ResponseEntity<?> responseEntity = new ResponseEntity<>("Logout Successful",HttpStatus.OK);
+        return responseEntity;
+    }
 
 
     @GetMapping("/user/userProfile")

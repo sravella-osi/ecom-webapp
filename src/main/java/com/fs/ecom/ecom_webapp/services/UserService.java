@@ -53,6 +53,4 @@ public class UserService {
         return new UserDetailsDTO(registeredUser);
     }
 
-
-
 }
