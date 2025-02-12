@@ -17,6 +17,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -127,7 +128,6 @@ public class UserInfoService implements UserDetailsService {
         }
     }
 
-
     public AddressDTO addAddress(AddressDTO addressDto, HttpServletRequest request) {
         User user = null;
         try {
@@ -135,7 +135,12 @@ public class UserInfoService implements UserDetailsService {
         } catch (UserNotFoundException e) {
             e.printStackTrace();
         }
-        if (addressRepository.findByUserId(user.getId()).isEmpty()){
+
+        boolean addressListIsEmpty = addressRepository.findByUserId(user.getId()).isEmpty();
+
+        if(addressDto.isDefault() && !addressListIsEmpty){
+            updateDefault(user);
+        } else if (addressListIsEmpty){
             addressDto.setDefault(true);
         }
 
@@ -177,6 +182,11 @@ public class UserInfoService implements UserDetailsService {
             throw new AddressNotFoundException("Address not found");
         }
         else {
+            if(addressDto.isDefault()){
+                if(addressRepository.findByUserId(user.getId()).size()>1){
+                    setDefault(user);
+                }
+            }
             addressRepository.deleteById(addressDto.getId());
         }
 
@@ -192,8 +202,24 @@ public class UserInfoService implements UserDetailsService {
             throw new AddressNotFoundException("Address not found");
         }
         else {
+            if(addressDto.isDefault()){
+                updateDefault(user);
+            }
             addressDto = new AddressDTO(addressRepository.save(new AddressBook(addressDto, user)));
         }
         return addressDto;
     }
+
+    private void updateDefault(User user){
+        for(AddressBook address : user.getAddresses()){
+            if(address.isDefault()){
+                address.setDefault(false);
+            }
+        }
+    }
+
+    private void setDefault(User user){
+        addressRepository.findByUserId(user.getId()).getFirst().setDefault(true);
+    }
+
 }
