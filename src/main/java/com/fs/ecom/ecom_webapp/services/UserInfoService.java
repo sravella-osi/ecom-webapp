@@ -165,7 +165,12 @@ public class UserInfoService implements UserDetailsService {
         List<AddressDTO> addresses = new ArrayList<>();
         for(AddressBook address : addressBookList){
             AddressDTO addressDto = new AddressDTO(address);
-            addresses.add(addressDto);
+            if(addressDto.isDefault()){
+                addresses.addFirst(addressDto);
+            }
+            else{
+                addresses.add(addressDto);
+            }
         }
 
         return addresses;
