@@ -1,36 +1,15 @@
 package com.fs.ecom.ecom_webapp.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "privileges")
+@Data
 public class Privilege {
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<UserPrivilege> getUserPrivileges() {
-        return userPrivileges;
-    }
-
-    public void setUserPrivileges(Set<UserPrivilege> userPrivileges) {
-        this.userPrivileges = userPrivileges;
-    }
 
     public Privilege(int id, String name, Set<UserPrivilege> userPrivileges) {
         this.id = id;

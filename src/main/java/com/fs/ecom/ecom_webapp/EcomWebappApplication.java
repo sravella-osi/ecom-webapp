@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories
 @EnableJpaAuditing
-@ComponentScan("com.fs.*")
+@ComponentScan("com.fs")
 public class EcomWebappApplication {
 
 	public static void main(String[] args) {
