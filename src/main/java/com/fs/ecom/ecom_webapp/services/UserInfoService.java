@@ -2,6 +2,7 @@ package com.fs.ecom.ecom_webapp.services;
 
 import com.fs.ecom.ecom_webapp.dto.RegisterDTO;
 import com.fs.ecom.ecom_webapp.dto.UserDetailsDTO;
+import com.fs.ecom.ecom_webapp.mapper.UserMapper;
 import com.fs.ecom.ecom_webapp.models.User;
 import com.fs.ecom.ecom_webapp.repositories.UserRepository;
 import com.fs.ecom.ecom_webapp.security.service.UserInfoDetails;
@@ -25,6 +26,9 @@ public class UserInfoService implements UserDetailsService {
     private UserPrivilegeService userPrivilegeService;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     @Lazy
     private PasswordEncoder encoder;
 
@@ -38,8 +42,7 @@ public class UserInfoService implements UserDetailsService {
 
     public UserDetailsDTO addUser(RegisterDTO registerDTO) {
         registerDTO.setPassword(encoder.encode(registerDTO.getPassword()));
-        UserDetailsDTO userDto = new UserDetailsDTO();
-        userDto = registerUser(registerDTO);
+        UserDetailsDTO userDto =  registerUser(registerDTO);
         userPrivilegeService.addUserPriv(repository.findByEmail(registerDTO.getEmail()).get());
         return userDto;
     }
@@ -49,7 +52,7 @@ public class UserInfoService implements UserDetailsService {
         String lastName = registerDTO.getLastName();
         User user = new User(firstName, lastName, registerDTO.defaultUserName(), registerDTO.getEmail(), registerDTO.getPassword(), registerDTO.getMobile());
         User registeredUser = repository.save(user);
-        return new UserDetailsDTO(registeredUser);
+        return userMapper.getUserDetailsDTO(registeredUser);
     }
 
 }

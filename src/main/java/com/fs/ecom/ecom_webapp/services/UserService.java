@@ -3,6 +3,7 @@ package com.fs.ecom.ecom_webapp.services;
 import com.fs.ecom.ecom_webapp.dto.*;
 import com.fs.ecom.ecom_webapp.exceptions.AddressNotFoundException;
 import com.fs.ecom.ecom_webapp.exceptions.UserNotFoundException;
+import com.fs.ecom.ecom_webapp.mapper.UserMapper;
 import com.fs.ecom.ecom_webapp.models.AddressBook;
 import com.fs.ecom.ecom_webapp.models.User;
 import com.fs.ecom.ecom_webapp.repositories.AddressRepository;
@@ -29,6 +30,9 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public User getUser (Long id) {
         return repository.getReferenceById(id);
     }
@@ -44,9 +48,7 @@ public class UserService {
         existingUser.setUserName(updateDTO.getUserName());
         existingUser.setEmail(updateDTO.getEmail());
         existingUser.setMobile(updateDTO.getMobile());
-
-        repository.save(existingUser);
-        return new UserDetailsDTO(existingUser);
+        return userMapper.getUserDetailsDTO(repository.save(existingUser));
     }
 
     public void deleteUser (Long id){
@@ -63,20 +65,15 @@ public class UserService {
         Optional<User> user = repository.findByEmail(subject);
 
         UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
-
+        User temp = new User();
         try{
             if (user.isPresent()) {
-                User temp = user.get();
-                userDetailsDTO.setId(temp.getId());
-                userDetailsDTO.setUserName(temp.getUserName());
-                userDetailsDTO.setMobile(temp.getMobile());
-                userDetailsDTO.setEmail(temp.getEmail());
-                userDetailsDTO.setFirstName(temp.getFirstName());
-                userDetailsDTO.setLastName(temp.getLastName());
+                temp = user.get();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        userDetailsDTO = userMapper.getUserDetailsDTO(temp);
         return userDetailsDTO;
     }
 
@@ -107,7 +104,7 @@ public class UserService {
         return "No Token";
     }
 
-    public User getUserFromRequest(HttpServletRequest request) throws UserNotFoundException {
+    public User getUserFromRequest(HttpServletRequest request) {
         String token = getJWTfromCookie(request);
         String subject = jwtService.extractSubject(token);
         Optional<User> user = repository.findByEmail(subject);
@@ -121,12 +118,7 @@ public class UserService {
 
     public AddressDTO addAddress(AddressDTO addressDto, HttpServletRequest request) {
         User user = null;
-        try {
-            user = getUserFromRequest(request);
-        } catch (UserNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        user = getUserFromRequest(request);
         boolean addressListIsEmpty = addressRepository.findByUserId(user.getId()).isEmpty();
 
         if(addressDto.isDefault() && !addressListIsEmpty){

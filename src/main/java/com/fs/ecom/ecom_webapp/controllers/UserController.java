@@ -22,9 +22,6 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    UserInfoService userInfoService;
-
     @GetMapping("/userProfile")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> userProfile(HttpServletRequest httpServletRequest) {

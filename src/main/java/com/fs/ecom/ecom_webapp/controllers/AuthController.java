@@ -43,8 +43,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO){
         UserDetailsDTO userDetailsDTO = userInfoService.addUser(registerDTO);
-        ResponseEntity<?> response = ResponseEntity.status(HttpStatus.CREATED).body(userDetailsDTO);
-        return response;
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDetailsDTO);
     }
 
     @GetMapping("/logout")
@@ -56,12 +55,6 @@ public class AuthController {
         response.addHeader("Set-Cookie", String.format("%s=%s; Max-Age=0; Path=/; Domain = localhost; HttpOnly; Secure; SameSite=None",
                 cookie.getName(), cookie.getValue()));
         return new ResponseEntity<>("Logout Successful",HttpStatus.OK);
-    }
-
-    @GetMapping("/admin/adminProfile")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String adminProfile() {
-        return "Welcome to Admin Profile";
     }
 
     @PostMapping("/generateToken")

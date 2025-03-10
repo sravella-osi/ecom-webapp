@@ -1,7 +1,5 @@
 package com.fs.ecom.ecom_webapp.dto;
 
-
-import com.fs.ecom.ecom_webapp.models.User;
 import lombok.Data;
 
 @Data
@@ -23,15 +21,6 @@ public class UserDetailsDTO {
         this.email = email;
         this.mobile = mobile;
         this.userName = userName;
-    }
-
-    public UserDetailsDTO(User user){
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.mobile = user.getMobile();
-        this.userName = user.getUserName();
     }
 
 }
