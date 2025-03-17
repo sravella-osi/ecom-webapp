@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -58,10 +57,10 @@ public class User {
     private String mobile;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
-    private Set<UserPrivilege> userPrivileges;
+    private List<UserPrivilege> userPrivileges;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
-    private Set<AddressBook> addressBooks;
+    private List<AddressBook> addressBooks;
 
     public User(String firstName, String lastName, String userName, String email, String password, String mobile) {
         this.firstName = firstName;

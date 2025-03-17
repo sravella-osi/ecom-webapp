@@ -28,8 +28,8 @@ public class Product {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "discount_id", referencedColumnName = "discount_id")
     private Discount discount;
-    @OneToOne
-    @JoinColumn(name = "seller_id", referencedColumnName = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "seller_id", referencedColumnName = "user_id", nullable = false)
     private User seller;
     private boolean active;
     private String status;
